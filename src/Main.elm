@@ -41,7 +41,6 @@ type Msg
     | Unlock
     | Arm
     | Disarm
-    | Trigger
 
 
 update : Msg -> Model -> Model
