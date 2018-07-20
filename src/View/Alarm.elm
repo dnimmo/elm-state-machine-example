@@ -5,28 +5,40 @@ import Html.Events exposing (onClick)
 import Html.Attributes exposing (class)
 
 
-armedAlarm : msg -> Html msg
-armedAlarm disarmMsg =
+armedAlarm : msg -> Bool -> Html msg
+armedAlarm disarmMsg allowAction =
     div
         []
         [ p [] [ text "ARMED" ]
-        , button [ onClick disarmMsg ] [ text "Disarm" ]
+        , (if allowAction == True then
+            button [ onClick disarmMsg ] [ text "Disarm" ]
+           else
+            p [] [ text "Alarm can not be changed until the door is closed" ]
+          )
         ]
 
 
-disarmedAlarm : msg -> Html msg
-disarmedAlarm armMsg =
+disarmedAlarm : msg -> Bool -> Html msg
+disarmedAlarm armMsg allowAction =
     div
         []
         [ p [] [ text "DISARMED" ]
-        , button [ onClick armMsg ] [ text "Arm" ]
+        , (if allowAction == True then
+            button [ onClick armMsg ] [ text "Arm" ]
+           else
+            p [] [ text "Alarm can not be changed until the door is closed" ]
+          )
         ]
 
 
-triggeredAlarm : msg -> Html msg
-triggeredAlarm disarmMsg =
+triggeredAlarm : msg -> Bool -> Html msg
+triggeredAlarm disarmMsg allowAction =
     div
         [ class "triggered" ]
         [ p [] [ text "TRIGGERED!" ]
-        , button [ onClick disarmMsg ] [ text "Disarm" ]
+        , (if allowAction == True then
+            button [ onClick disarmMsg ] [ text "Disarm" ]
+           else
+            p [] [ text "Alarm can not be changed until the door is closed" ]
+          )
         ]

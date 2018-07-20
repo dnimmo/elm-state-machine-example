@@ -120,13 +120,13 @@ view model =
                     [ class "alarmPanel " ]
                     [ case alarmState of
                         Armed ->
-                            armedAlarm Disarm
+                            armedAlarm Disarm (doorState /= Opened)
 
                         Disarmed ->
-                            disarmedAlarm Arm
+                            disarmedAlarm Arm (doorState /= Opened)
 
                         Triggered ->
-                            triggeredAlarm Disarm
+                            triggeredAlarm Disarm (doorState /= Opened)
                     ]
                 ]
 
