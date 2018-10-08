@@ -1,7 +1,7 @@
 module Main exposing (AlarmState(..), DoorState(..), Model(..), Msg(..), initialModel, main, update, view)
 
 import Browser
-import Html exposing (Html, div, h1, img, text)
+import Html exposing (Html, div, h1, img, p, text)
 import Html.Attributes exposing (class)
 import View.Alarm as Alarm exposing (armedAlarm, disarmedAlarm, triggeredAlarm)
 import View.Door as Door exposing (closedDoor, lockedDoor, openDoor)
@@ -12,7 +12,8 @@ import View.Door as Door exposing (closedDoor, lockedDoor, openDoor)
 
 
 type Model
-    = ViewRoom DoorState AlarmState
+    = DisplayingRoom DoorState AlarmState
+    | Failure String
 
 
 type DoorState
@@ -29,7 +30,7 @@ type AlarmState
 
 initialModel : Model
 initialModel =
-    ViewRoom Closed Armed
+    DisplayingRoom Closed Armed
 
 
 
@@ -48,61 +49,73 @@ type Msg
 update : Msg -> Model -> Model
 update msg model =
     case model of
-        ViewRoom doorState alarmState ->
+        DisplayingRoom doorState alarmState ->
             case doorState of
                 Opened ->
                     case msg of
                         Close ->
-                            ViewRoom Closed alarmState
+                            DisplayingRoom Closed alarmState
 
                         _ ->
-                            model
+                            Failure "unexpected message received while door was in Opened state"
 
                 Closed ->
                     case msg of
                         Open ->
                             case alarmState of
                                 Armed ->
-                                    ViewRoom Opened Triggered
+                                    DisplayingRoom Opened Triggered
 
                                 _ ->
-                                    ViewRoom Opened alarmState
+                                    DisplayingRoom Opened alarmState
 
                         Lock ->
-                            ViewRoom Locked alarmState
+                            DisplayingRoom Locked alarmState
 
                         Arm ->
-                            ViewRoom Closed Armed
+                            DisplayingRoom Closed Armed
 
                         Disarm ->
-                            ViewRoom Closed Disarmed
+                            DisplayingRoom Closed Disarmed
 
                         _ ->
-                            model
+                            Failure "unexpected message received while door was in Closed state"
 
                 Locked ->
                     case msg of
                         Unlock ->
-                            ViewRoom Closed alarmState
+                            DisplayingRoom Closed alarmState
 
                         Arm ->
-                            ViewRoom Locked Armed
+                            DisplayingRoom Locked Armed
 
                         Disarm ->
-                            ViewRoom Locked Disarmed
+                            DisplayingRoom Locked Disarmed
 
                         _ ->
-                            model
+                            Failure "unexpected message received while door was in Locked state"
+
+        Failure _ ->
+            model
 
 
 
 ---- VIEW ----
 
 
+failure : String -> Html msg
+failure message =
+    div []
+        [ p [] [ text message ] ]
+
+
 view : Model -> Html Msg
 view model =
     case model of
-        ViewRoom doorState alarmState ->
+        Failure message ->
+            failure message
+
+        DisplayingRoom doorState alarmState ->
             div
                 []
                 [ div
