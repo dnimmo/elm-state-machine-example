@@ -1,9 +1,11 @@
-module Main exposing (..)
+module Main exposing (AlarmState(..), DoorState(..), Model(..), Msg(..), initialModel, main, update, view)
 
-import View.Door as Door exposing (openDoor, closedDoor, lockedDoor)
-import View.Alarm as Alarm exposing (armedAlarm, disarmedAlarm, triggeredAlarm)
-import Html exposing (Html, text, div, h1, img)
+import Browser
+import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (class)
+import View.Alarm as Alarm exposing (armedAlarm, disarmedAlarm, triggeredAlarm)
+import View.Door as Door exposing (closedDoor, lockedDoor, openDoor)
+
 
 
 ---- MODEL ----
@@ -134,10 +136,10 @@ view model =
 ---- PROGRAM ----
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.beginnerProgram
-        { model = initialModel
+    Browser.sandbox
+        { init = initialModel
         , view = view
         , update = update
         }
